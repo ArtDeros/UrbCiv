@@ -1,0 +1,91 @@
+{
+  "name": "UrbCiv Assistant",
+  "description": "Asistente virtual para información gubernamental",
+  "language": "es",
+  "defaultLanguage": "es",
+  "supportedLanguages": ["es", "en", "fr"],
+  "intents": [
+    {
+      "name": "greeting",
+      "utterances": [
+        "hola",
+        "buenos días",
+        "buenas tardes",
+        "buenas noches",
+        "saludos"
+      ]
+    },
+    {
+      "name": "farewell",
+      "utterances": [
+        "adiós",
+        "hasta luego",
+        "hasta pronto",
+        "nos vemos"
+      ]
+    },
+    {
+      "name": "help",
+      "utterances": [
+        "ayuda",
+        "necesito ayuda",
+        "no entiendo",
+        "cómo funciona",
+        "qué puedo hacer"
+      ]
+    },
+    {
+      "name": "government_services",
+      "utterances": [
+        "servicios gubernamentales",
+        "trámites",
+        "beneficios",
+        "ayudas",
+        "subsidios"
+      ]
+    },
+    {
+      "name": "housing",
+      "utterances": [
+        "vivienda",
+        "casa",
+        "apartamento",
+        "alquiler",
+        "hipoteca"
+      ]
+    },
+    {
+      "name": "justice",
+      "utterances": [
+        "justicia",
+        "leyes",
+        "derechos",
+        "abogado",
+        "tribunal"
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "name": "welcome",
+      "nodes": [
+        {
+          "id": "entry",
+          "type": "standard",
+          "next": "welcome_message"
+        },
+        {
+          "id": "welcome_message",
+          "type": "standard",
+          "text": "¡Bienvenido al Asistente GovTech! ¿En qué puedo ayudarte hoy?",
+          "next": "wait_for_input"
+        },
+        {
+          "id": "wait_for_input",
+          "type": "standard",
+          "next": "process_input"
+        }
+      ]
+    }
+  ]
+} 
