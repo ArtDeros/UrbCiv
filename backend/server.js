@@ -326,98 +326,89 @@ const predefinedResponses = {
 // Almacenamiento temporal de datos del usuario
 const userSessions = {};
 
+const categoryResources = {
+  vivienda: {
+    en: {
+      links: [
+        {
+          title: "Housing Assistance Programs",
+          url: "https://www.hud.gov/topics/rental_assistance"
+        },
+        {
+          title: "Apply for Housing",
+          url: "https://www.hud.gov/program_offices/public_indian_housing/programs/hcv/apply"
+        },
+        {
+          title: "Housing Rights",
+          url: "https://www.hud.gov/topics/housing_rights"
+        }
+      ],
+      commonQuestions: [
+        "How to apply for housing assistance?",
+        "What documents do I need?",
+        "How long is the waiting list?"
+      ]
+    },
+    es: {
+      links: [
+        {
+          title: "Programas de Asistencia de Vivienda",
+          url: "https://www.hud.gov/es/programas"
+        },
+        {
+          title: "Solicitar Vivienda",
+          url: "https://www.hud.gov/es/solicitar"
+        },
+        {
+          title: "Derechos de Vivienda",
+          url: "https://www.hud.gov/es/derechos"
+        }
+      ],
+      commonQuestions: [
+        "¿Cómo solicitar asistencia de vivienda?",
+        "¿Qué documentos necesito?",
+        "¿Cuánto tiempo dura la lista de espera?"
+      ]
+    }
+  }
+  // Add more categories as needed
+}
+
 // Endpoint para procesar mensajes
 app.post('/api/chat', async (req, res) => {
   try {
-    const { message, userId, countryCode, language } = req.body;
-    const botLanguage = language || countryLanguageMap[countryCode] || 'es';
-    const messageLower = message.toLowerCase().trim();
+    const { message, sessionId, countryCode, language, userData } = req.body
+    const isEnglish = language === 'en'
 
-    // Obtener o crear sesión de usuario
-    if (!userSessions[userId]) {
-      userSessions[userId] = {
-        name: null,
-        gender: null,
-        step: 'initial'
-      };
+    // Si es la primera interacción después de recoger la información del usuario
+    if (userData && userData.category) {
+      const category = userData.category
+      const resources = categoryResources[category]
+      
+      if (resources) {
+        const langResources = resources[language]
+        const response = {
+          text: isEnglish
+            ? `Here are some useful resources for ${category}:\n\n${langResources.links.map(link => `- ${link.title}: ${link.url}`).join('\n')}\n\nCommon questions:\n${langResources.commonQuestions.map(q => `- ${q}`).join('\n')}`
+            : `Aquí tienes algunos recursos útiles para ${category}:\n\n${langResources.links.map(link => `- ${link.title}: ${link.url}`).join('\n')}\n\nPreguntas comunes:\n${langResources.commonQuestions.map(q => `- ${q}`).join('\n')}`,
+          sessionId: sessionId || Date.now().toString(),
+          suggestions: langResources.commonQuestions.map(q => ({
+            text: q,
+            category
+          }))
+        }
+        return res.json(response)
+      }
     }
 
-    let responseText = '';
-    let responseType = 'text';
-
-    // Lógica de flujo de conversación
-    switch (userSessions[userId].step) {
-      case 'initial':
-        if (messageLower === 'hello' || messageLower === 'hi') {
-          responseText = predefinedResponses['hello'][botLanguage];
-          userSessions[userId].step = 'waiting_name';
-        } else {
-          responseText = botLanguage === 'en' 
-            ? 'Please start with "hello" or "hi"'
-            : 'Por favor, comience con "hola"';
-        }
-        break;
-
-      case 'waiting_name':
-        // Asumimos que el mensaje es el nombre
-        userSessions[userId].name = message;
-        responseText = botLanguage === 'en'
-          ? `Hello ${message}, what type of procedure would you like to perform? Are you a lady or gentleman?`
-          : `Hola ${message}, ¿qué trámite desea realizar? ¿Es usted dama o caballero?`;
-        userSessions[userId].step = 'waiting_gender';
-        break;
-
-      case 'waiting_gender':
-        // Asumimos que el mensaje es el género
-        userSessions[userId].gender = messageLower.includes('dama') || messageLower.includes('lady') ? 'lady' : 'gentleman';
-        const genderText = userSessions[userId].gender === 'lady' 
-          ? (botLanguage === 'en' ? 'lady' : 'dama')
-          : (botLanguage === 'en' ? 'gentleman' : 'caballero');
-        responseText = botLanguage === 'en'
-          ? `Thank you ${userSessions[userId].name}. As a ${genderText}, please select one of the following services:\n\n1. Housing\n2. Education\n3. Documentation and Citizenship\n4. Transportation and Infrastructure\n5. Social Benefits\n6. Health and Wellness\n7. Work and Entrepreneurship\n8. Justice\n\nPlease type the number of your choice.`
-          : `Gracias ${userSessions[userId].name}. Como ${genderText}, por favor seleccione uno de los siguientes servicios:\n\n1. Vivienda\n2. Educación\n3. Documentación y Ciudadanía\n4. Transporte e Infraestructura\n5. Beneficio Social\n6. Salud y Bienestar\n7. Trabajo y Emprendimiento\n8. Justicia\n\nPor favor, escriba el número de su elección.`;
-        userSessions[userId].step = 'waiting_service';
-        break;
-
-      case 'waiting_service':
-        // Procesar selección de servicio
-        const serviceNumber = parseInt(message);
-        if (isNaN(serviceNumber) || serviceNumber < 1 || serviceNumber > 8) {
-          responseText = botLanguage === 'en'
-            ? `${userSessions[userId].name}, please select a valid number from the menu.`
-            : `${userSessions[userId].name}, por favor seleccione un número válido del menú.`;
-        } else {
-          const services = ['vivienda', 'educacion', 'documentacion', 'transporte', 'beneficio', 'salud', 'trabajo', 'justicia'];
-          const selectedService = services[serviceNumber - 1];
-          const serviceInfo = predefinedResponses[selectedService][botLanguage];
-          
-          responseText = botLanguage === 'en'
-            ? `${userSessions[userId].name}, here is the information about ${serviceInfo.title}:\n\n${serviceInfo.response}`
-            : `${userSessions[userId].name}, aquí está la información sobre ${serviceInfo.title}:\n\n${serviceInfo.response}`;
-          userSessions[userId].step = 'initial';
-        }
-        break;
-    }
-
-    const response = {
-      responses: [
-        {
-          text: responseText,
-          type: responseType
-        }
-      ],
-      language: botLanguage
-    };
-
-    res.json(response);
+    // Procesamiento normal del mensaje
+    const response = await processMessage(message, sessionId, countryCode, language)
+    res.json(response)
   } catch (error) {
-    console.error('Error processing message:', error);
-    res.status(500).json({
-      error: 'Error processing message',
-      details: error.message
-    });
+    console.error('Error processing chat:', error)
+    res.status(500).json({ error: 'Error processing chat' })
   }
-});
+})
 
 // Endpoint para verificar el estado del servidor
 app.get('/api/health', (req, res) => {

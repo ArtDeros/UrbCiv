@@ -10,10 +10,18 @@ import {
   Icon,
   Image,
   Flex,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from '@chakra-ui/react'
 import { FaHome, FaGraduationCap, FaIdCard, FaBus, FaHandHoldingHeart, FaHeartbeat, FaBriefcase, FaBalanceScale, FaRobot, FaGlobe, FaClock, FaShieldAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { useLocation } from '../contexts/LocationContext'
+import { useLocation } from '../contexts/LocationContext.js'
+import { useState } from 'react'
 
 const features = [
   {
@@ -51,20 +59,91 @@ const features = [
 ]
 
 const services = [
-  { id: 'vivienda', icon: FaHome, title: { en: 'Housing', es: 'Vivienda' } },
-  { id: 'educacion', icon: FaGraduationCap, title: { en: 'Education', es: 'Educación' } },
-  { id: 'documentacion', icon: FaIdCard, title: { en: 'Documentation', es: 'Documentación' } },
-  { id: 'transporte', icon: FaBus, title: { en: 'Transportation', es: 'Transporte' } },
-  { id: 'beneficio', icon: FaHandHoldingHeart, title: { en: 'Social Benefits', es: 'Beneficio Social' } },
-  { id: 'salud', icon: FaHeartbeat, title: { en: 'Health', es: 'Salud' } },
-  { id: 'trabajo', icon: FaBriefcase, title: { en: 'Work', es: 'Trabajo' } },
-  { id: 'justicia', icon: FaBalanceScale, title: { en: 'Justice', es: 'Justicia' } },
+  { 
+    id: 'vivienda', 
+    icon: FaHome, 
+    title: { en: 'Housing', es: 'Vivienda' },
+    help: {
+      en: 'Information about housing assistance, subsidies, and housing programs',
+      es: 'Información sobre asistencia de vivienda, subsidios y programas habitacionales'
+    }
+  },
+  { 
+    id: 'educacion', 
+    icon: FaGraduationCap, 
+    title: { en: 'Education', es: 'Educación' },
+    help: {
+      en: 'Educational programs, scholarships, and student support services',
+      es: 'Programas educativos, becas y servicios de apoyo estudiantil'
+    }
+  },
+  { 
+    id: 'documentacion', 
+    icon: FaIdCard, 
+    title: { en: 'Documentation', es: 'Documentación' },
+    help: {
+      en: 'Help with official documents, IDs, and paperwork',
+      es: 'Ayuda con documentos oficiales, identificaciones y trámites'
+    }
+  },
+  { 
+    id: 'transporte', 
+    icon: FaBus, 
+    title: { en: 'Transportation', es: 'Transporte' },
+    help: {
+      en: 'Public transportation information and travel assistance',
+      es: 'Información sobre transporte público y asistencia de viaje'
+    }
+  },
+  { 
+    id: 'beneficio', 
+    icon: FaHandHoldingHeart, 
+    title: { en: 'Social Benefits', es: 'Beneficio Social' },
+    help: {
+      en: 'Social welfare programs and financial assistance',
+      es: 'Programas de bienestar social y asistencia financiera'
+    }
+  },
+  { 
+    id: 'salud', 
+    icon: FaHeartbeat, 
+    title: { en: 'Health', es: 'Salud' },
+    help: {
+      en: 'Healthcare services and medical assistance information',
+      es: 'Información sobre servicios de salud y asistencia médica'
+    }
+  },
+  { 
+    id: 'trabajo', 
+    icon: FaBriefcase, 
+    title: { en: 'Work', es: 'Trabajo' },
+    help: {
+      en: 'Employment opportunities and job search assistance',
+      es: 'Oportunidades de empleo y asistencia en la búsqueda de trabajo'
+    }
+  },
+  { 
+    id: 'justicia', 
+    icon: FaBalanceScale, 
+    title: { en: 'Justice', es: 'Justicia' },
+    help: {
+      en: 'Legal assistance and justice system information',
+      es: 'Asistencia legal e información sobre el sistema de justicia'
+    }
+  },
 ]
 
 const Home = () => {
   const navigate = useNavigate()
   const { language } = useLocation()
   const isEnglish = language === 'en'
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [selectedService, setSelectedService] = useState<any>(null)
+
+  const handleServiceClick = (service: any) => {
+    setSelectedService(service)
+    onOpen()
+  }
 
   return (
     <Container maxW="container.xl" py={8}>
@@ -77,6 +156,8 @@ const Home = () => {
             height="250px"
             mx="auto"
             mb={6}
+            cursor="pointer"
+            onClick={() => navigate('/chat')}
           >
             <Image
               src="/Mi2So.webp"
@@ -144,7 +225,7 @@ const Home = () => {
                 key={service.id}
                 height="auto"
                 p={6}
-                onClick={() => navigate('/chat')}
+                onClick={() => handleServiceClick(service)}
                 variant="outline"
                 colorScheme="blue"
                 _hover={{
@@ -177,10 +258,36 @@ const Home = () => {
             }}
             transition="all 0.2s"
           >
-            {isEnglish ? 'You write, we answer, all true, best support.' : 'Tú escribes, nosotros respondemos, todo cierto, el mejor apoyo.'}
+            {isEnglish ? 'Start Chatting Now' : 'Comienza a Chatear Ahora'}
           </Button>
         </Box>
       </VStack>
+
+      {/* Service Help Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="md">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            {selectedService?.title[language as 'en' | 'es']}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <Text mb={4}>
+              {selectedService?.help[language as 'en' | 'es']}
+            </Text>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                onClose()
+                navigate('/chat')
+              }}
+              width="100%"
+            >
+              {isEnglish ? 'Start Chat' : 'Iniciar Chat'}
+            </Button>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Container>
   )
 }
