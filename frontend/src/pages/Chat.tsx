@@ -32,7 +32,7 @@ import { useLocation } from '../contexts/LocationContext'
 import ChatSuggestions, { suggestions } from '../components/ChatSuggestions'
 import { Suggestion, Message as ImportedMessage, Conversation } from '../types/chat'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
 interface Message {
   text: string;
