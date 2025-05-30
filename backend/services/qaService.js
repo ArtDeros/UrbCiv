@@ -1,3 +1,4 @@
+const natural = require('natural');
 const qaConfig = require('../config/qa_config');
 const languageConfig = require('../config/language_config');
 const { 
@@ -450,36 +451,11 @@ async function saveFavoriteResponse(sessionId, responseId) {
   }
 }
 
-function generateSuggestions(keywords, language) {
-  const suggestions = [];
-  const maxSuggestions = 3;
-  
-  // Generar sugerencias basadas en palabras clave
-  for (const keyword of keywords) {
-    if (suggestions.length >= maxSuggestions) break;
-    
-    const category = Object.keys(qaConfig.categories).find(cat => 
-      qaConfig.categories[cat].keywords.includes(keyword)
-    );
-    
-    if (category) {
-      const categoryData = qaConfig.categories[category];
-      const question = categoryData.questions[0];
-      if (question) {
-        suggestions.push({
-          text: question.patterns[language][0],
-          category: category
-        });
-      }
-    }
-  }
-  
-  return suggestions;
-}
-
 module.exports = {
   processQuestion,
   CONVERSATION_STATES,
   saveResponseRating,
-  saveFavoriteResponse
+  saveFavoriteResponse,
+  getContextSuggestions,
+  handleInitialConversation
 }; 

@@ -11,7 +11,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.21.2",
-    "natural": "^8.0.1",
+    "firebase-admin": "^13.4.0",
+    "natural": "^8.1.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
