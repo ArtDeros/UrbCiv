@@ -6,7 +6,10 @@ const chatRoutes = require('./routes/chatRoutes');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://urb-civ-frontend.onrender.com', 'http://localhost:3000', 'http://localhost:3001'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Rutas de la API
