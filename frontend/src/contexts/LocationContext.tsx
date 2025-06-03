@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState } from 'react';
 
+export type Language = 'en' | 'es' | 'fr';
+
 type LocationContextType = {
-  language: 'en' | 'es'
+  language: Language
   countryCode: string
-  setLanguage: (lang: 'en' | 'es') => void
+  setLanguage: (lang: Language) => void
 }
 
 const LocationContext = createContext<LocationContextType>({
@@ -13,7 +15,7 @@ const LocationContext = createContext<LocationContextType>({
 });
 
 export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<'en' | 'es'>('en');
+  const [language, setLanguage] = useState<Language>('en');
   const [countryCode] = useState('CA');
 
   return (

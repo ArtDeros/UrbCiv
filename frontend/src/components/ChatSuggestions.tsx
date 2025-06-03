@@ -25,11 +25,13 @@ export const suggestions = {
     {
       en: "What is BC Housing and what services does it offer?",
       es: "¿Qué es BC Housing y qué servicios ofrece?",
+      fr: "Qu'est-ce que BC Housing et quels services offre-t-il ?",
       category: "vivienda"
     },
     {
       en: "Where can I find rental assistance programs in BC?",
       es: "¿Dónde encuentro los programas de asistencia para el alquiler en BC?",
+      fr: "Où puis-je trouver les programmes d'aide au logement en Colombie-Britannique ?",
       category: "vivienda"
     },
     {
@@ -127,6 +129,7 @@ export const suggestions = {
     {
       en: "Where can I find general information about education and training in B.C.?",
       es: "¿Dónde puedo encontrar información general sobre educación y capacitación en B.C.?",
+      fr: "Où puis-je trouver des informations générales sur l'éducation et la formation en Colombie-Britannique ?",
       category: "educacion"
     },
     {
@@ -502,6 +505,7 @@ export const suggestions = {
 const ChatSuggestions = ({ onSuggestionClick, category }: ChatSuggestionsProps) => {
   const { language } = useLocation();
   const isEnglish = language === 'en';
+  const isFrench = language === 'fr';
   const bgColor = useColorModeValue('gray.50', 'gray.700');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
   const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
@@ -510,11 +514,12 @@ const ChatSuggestions = ({ onSuggestionClick, category }: ChatSuggestionsProps) 
     const welcomeMessage = {
       en: `Before we start, what's your name?`,
       es: `Antes de empezar, dime cómo te llamas`,
+      fr: `Avant de commencer, quel est votre nom ?`,
       category: category,
       type: 'category' as const
     };
     onSuggestionClick(welcomeMessage);
-    setCurrentQuestionIndex(0); // Resetear el índice al seleccionar una nueva categoría
+    setCurrentQuestionIndex(0);
   };
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
@@ -537,7 +542,9 @@ const ChatSuggestions = ({ onSuggestionClick, category }: ChatSuggestionsProps) 
       mb={4}
     >
       <Text fontSize="lg" fontWeight="bold" mb={3} color={useColorModeValue('black', 'white')}>
-        {isEnglish ? 'Select a Category' : 'Selecciona una Categoría'}
+        {isEnglish ? 'Select a Category' : 
+         isFrench ? 'Sélectionnez une Catégorie' : 
+         'Selecciona una Categoría'}
       </Text>
       <VStack spacing={2} align="stretch">
         {Object.keys(suggestions).map((cat) => (
@@ -565,14 +572,23 @@ const ChatSuggestions = ({ onSuggestionClick, category }: ChatSuggestionsProps) 
                 cat === 'salud' ? 'Health' :
                 cat === 'trabajo' ? 'Work' :
                 cat === 'justicia' ? 'Justice' : cat
-              : cat === 'vivienda' ? 'Vivienda' :
-                cat === 'educacion' ? 'Educación' :
-                cat === 'documentacion' ? 'Documentación' :
-                cat === 'transporte' ? 'Transporte' :
-                cat === 'beneficio' ? 'Beneficios' :
-                cat === 'salud' ? 'Salud' :
-                cat === 'trabajo' ? 'Trabajo' :
-                cat === 'justicia' ? 'Justicia' : cat}
+              : isFrench
+                ? cat === 'vivienda' ? 'Logement' :
+                  cat === 'educacion' ? 'Éducation' :
+                  cat === 'documentacion' ? 'Documentation' :
+                  cat === 'transporte' ? 'Transport' :
+                  cat === 'beneficio' ? 'Prestations' :
+                  cat === 'salud' ? 'Santé' :
+                  cat === 'trabajo' ? 'Travail' :
+                  cat === 'justicia' ? 'Justice' : cat
+                : cat === 'vivienda' ? 'Vivienda' :
+                  cat === 'educacion' ? 'Educación' :
+                  cat === 'documentacion' ? 'Documentación' :
+                  cat === 'transporte' ? 'Transporte' :
+                  cat === 'beneficio' ? 'Beneficios' :
+                  cat === 'salud' ? 'Salud' :
+                  cat === 'trabajo' ? 'Trabajo' :
+                  cat === 'justicia' ? 'Justicia' : cat}
           </Button>
         ))}
       </VStack>
@@ -580,7 +596,9 @@ const ChatSuggestions = ({ onSuggestionClick, category }: ChatSuggestionsProps) 
       {category && suggestions[category as keyof typeof suggestions] && (
         <Box mt={4}>
           <Text fontSize="lg" fontWeight="bold" mb={3} color={useColorModeValue('black', 'white')}>
-            {isEnglish ? 'Suggested Question' : 'Pregunta Sugerida'}
+            {isEnglish ? 'Suggested Question' : 
+             isFrench ? 'Question Suggérée' : 
+             'Pregunta Sugerida'}
           </Text>
           <VStack spacing={2} align="stretch">
             {suggestions[category as keyof typeof suggestions][currentQuestionIndex] && (
@@ -600,7 +618,9 @@ const ChatSuggestions = ({ onSuggestionClick, category }: ChatSuggestionsProps) 
               >
                 {isEnglish 
                   ? suggestions[category as keyof typeof suggestions][currentQuestionIndex].en 
-                  : suggestions[category as keyof typeof suggestions][currentQuestionIndex].es}
+                  : isFrench
+                    ? suggestions[category as keyof typeof suggestions][currentQuestionIndex].fr
+                    : suggestions[category as keyof typeof suggestions][currentQuestionIndex].es}
               </Button>
             )}
           </VStack>

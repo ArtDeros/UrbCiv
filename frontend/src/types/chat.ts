@@ -2,6 +2,7 @@ export interface Suggestion {
   text?: string;
   en: string;
   es: string;
+  fr: string;
   category?: string;
   type?: 'category' | 'question';
 }
