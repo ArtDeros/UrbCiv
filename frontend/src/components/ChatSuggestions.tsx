@@ -26,13 +26,15 @@ export const suggestions = {
       en: "What is BC Housing and what services does it offer?",
       es: "¿Qué es BC Housing y qué servicios ofrece?",
       fr: "Qu'est-ce que BC Housing et quels services offre-t-il ?",
-      category: "vivienda"
+      category: "vivienda",
+      type: 'question' as const
     },
     {
       en: "Where can I find rental assistance programs in BC?",
       es: "¿Dónde encuentro los programas de asistencia para el alquiler en BC?",
       fr: "Où puis-je trouver les programmes d'aide au logement en Colombie-Britannique ?",
-      category: "vivienda"
+      category: "vivienda",
+      type: 'question' as const
     },
     {
       en: "What is the subsidized housing program?",
@@ -130,7 +132,8 @@ export const suggestions = {
       en: "Where can I find general information about education and training in B.C.?",
       es: "¿Dónde puedo encontrar información general sobre educación y capacitación en B.C.?",
       fr: "Où puis-je trouver des informations générales sur l'éducation et la formation en Colombie-Britannique ?",
-      category: "educacion"
+      category: "educacion",
+      type: 'question' as const
     },
     {
       en: "What resources does the Ministry of Education and Child Care of B.C. offer?",
@@ -232,7 +235,9 @@ export const suggestions = {
     {
       en: "How do I get a new ID card?",
       es: "¿Cómo obtengo una nueva tarjeta de identidad?",
-      category: "documentacion"
+      fr: "Comment obtenir une nouvelle carte d'identité ?",
+      category: "documentacion",
+      type: 'question' as const
     },
     {
       en: "What documents do I need for citizenship?",
@@ -249,7 +254,9 @@ export const suggestions = {
     {
       en: "What organization regulates transportation at the federal level in Canada?",
       es: "¿Qué organismo regula el transporte a nivel federal en Canadá?",
-      category: "transporte"
+      fr: "Quelle organisation réglemente le transport au niveau fédéral au Canada ?",
+      category: "transporte",
+      type: 'question' as const
     },
     {
       en: "Where can I find travel notices, passport information, or travel documents for Canada?",
@@ -351,7 +358,9 @@ export const suggestions = {
     {
       en: "What social benefits am I eligible for?",
       es: "¿A qué beneficios sociales soy elegible?",
-      category: "beneficio"
+      fr: "À quelles prestations sociales suis-je admissible ?",
+      category: "beneficio",
+      type: 'question' as const
     },
     {
       en: "How do I apply for food assistance?",
@@ -368,7 +377,9 @@ export const suggestions = {
     {
       en: "Where can I find general information about health in British Columbia?",
       es: "¿Dónde puedo encontrar información general sobre salud en British Columbia?",
-      category: "salud"
+      fr: "Où puis-je trouver des informations générales sur la santé en Colombie-Britannique ?",
+      category: "salud",
+      type: 'question' as const
     },
     {
       en: "What is the Medical Services Plan (MSP)?",
@@ -470,7 +481,9 @@ export const suggestions = {
     {
       en: "How do I find job opportunities?",
       es: "¿Cómo encuentro oportunidades de trabajo?",
-      category: "trabajo"
+      fr: "Comment trouver des opportunités d'emploi ?",
+      category: "trabajo",
+      type: 'question' as const
     },
     {
       en: "What job training programs are available?",
@@ -487,7 +500,9 @@ export const suggestions = {
     {
       en: "How do I find legal assistance?",
       es: "¿Cómo encuentro asistencia legal?",
-      category: "justicia"
+      fr: "Comment trouver une assistance juridique ?",
+      category: "justicia",
+      type: 'question' as const
     },
     {
       en: "What are my rights as a citizen?",
