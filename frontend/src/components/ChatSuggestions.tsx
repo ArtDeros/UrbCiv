@@ -557,7 +557,14 @@ const ChatSuggestions = ({ onSuggestionClick, category }: ChatSuggestionsProps) 
             }}
           >
             {isEnglish 
-              ? cat.charAt(0).toUpperCase() + cat.slice(1)
+              ? cat === 'vivienda' ? 'Housing' :
+                cat === 'educacion' ? 'Education' :
+                cat === 'documentacion' ? 'Documentation' :
+                cat === 'transporte' ? 'Transportation' :
+                cat === 'beneficio' ? 'Benefits' :
+                cat === 'salud' ? 'Health' :
+                cat === 'trabajo' ? 'Work' :
+                cat === 'justicia' ? 'Justice' : cat
               : cat === 'vivienda' ? 'Vivienda' :
                 cat === 'educacion' ? 'Educación' :
                 cat === 'documentacion' ? 'Documentación' :
