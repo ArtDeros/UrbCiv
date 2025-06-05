@@ -1,28 +1,20 @@
 export interface Suggestion {
-  text?: string;
+  type: 'category' | 'question';
   en: string;
   es: string;
   fr: string;
   category?: string;
-  type?: 'category' | 'question';
 }
 
 export interface Message {
   text: string;
-  isUser: boolean;
-  id: string;
-  analysis?: {
-    quality: number;
-    bias: number;
-    sentiment: {
-      score: number;
-      emotion: string;
-      intensity: number;
-    };
-  };
+  sender: 'user' | 'assistant';
+  timestamp: string;
+  category?: string | null;
   suggestions?: Suggestion[];
-  isFavorite?: boolean;
-  rating?: 'positive' | 'negative';
+  id?: string;
+  isUser?: boolean;
+  details?: any;
 }
 
 export interface Conversation {

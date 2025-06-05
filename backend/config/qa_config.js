@@ -3,11 +3,13 @@ const qaConfig = {
     housing: {
       name: {
         en: "Housing",
-        es: "Vivienda"
+        es: "Vivienda",
+        fr: "Logement"
       },
       description: {
         en: "Information about housing programs, subsidies, and requirements in British Columbia",
-        es: "Información sobre programas de vivienda, subsidios y requisitos en British Columbia"
+        es: "Información sobre programas de vivienda, subsidios y requisitos en British Columbia",
+        fr: "Informations sur les programmes d'habitation, les subventions et les exigences en Colombie-Britannique"
       },
       questions: [
         {
@@ -19,10 +21,16 @@ const qaConfig = {
               "housing assistance requirements"
             ],
             es: [
-              "¿Qué es la vivienda subsidiada en British Columbia y quién puede aplicar?",
+              "¿Qué es la vivienda subsidiada en BC y quién puede aplicar?",
               "qué es vivienda subsidiada",
               "quien puede aplicar vivienda",
               "requisitos vivienda subsidiada"
+            ],
+            fr: [
+              "Qu'est-ce que l'habitation subventionnée en Colombie-Britannique et qui peut s'y prévaloir ?",
+              "éligibilité à l'habitation subventionnée",
+              "qui peut s'y prévaloir",
+              "exigences d'aide à l'habitation"
             ]
           },
           response: {
@@ -65,6 +73,26 @@ const qaConfig = {
                 }
               ],
               additionalInfo: "El programa está diseñado para ayudar a las personas a encontrar viviendas asequibles en BC. Los precios se calculan basándose en el ingreso familiar."
+            },
+            fr: {
+              main: "L'habitation subventionnée en Colombie-Britannique est un programme qui offre des logements à prix réduits pour les personnes de faible revenu.",
+              details: [
+                "Les personnes éligibles incluent :",
+                "- Résidents permanents ou citoyens canadiens",
+                "- Les personnes avec des revenus en dessous de la limite établie",
+                "- Les familles, les individus et les personnes âgées"
+              ],
+              links: [
+                {
+                  text: "BC Housing - Habitation Subventionnée",
+                  url: "https://www.bchousing.org/housing-assistance/rental-housing/subsidized-housing"
+                },
+                {
+                  text: "Guide d'éligibilité",
+                  url: "https://www.bchousing.org/housing-assistance/rental-housing/subsidized-housing/eligibility"
+                }
+              ],
+              additionalInfo: "Le programme est conçu pour aider les personnes à trouver des logements abordables en Colombie-Britannique. Les prix sont calculés en fonction du revenu familial."
             }
           }
         },
@@ -81,6 +109,12 @@ const qaConfig = {
               "requisitos vivienda subsidiada",
               "cómo calificar para vivienda",
               "requisitos para vivienda"
+            ],
+            fr: [
+              "Quels sont les exigences d'éligibilité pour l'habitation subventionnée en Colombie-Britannique ?",
+              "exigences d'habitation",
+              "exigences d'habitation subventionnée",
+              "comment se qualifier pour l'habitation"
             ]
           },
           response: {
@@ -123,6 +157,26 @@ const qaConfig = {
                 }
               ],
               additionalInfo: "Los límites de ingresos varían según el tamaño de la familia y la ubicación. Se recomienda verificar los límites actualizados en el sitio web de BC Housing."
+            },
+            fr: {
+              main: "Les exigences d'éligibilité principales pour l'habitation subventionnée en Colombie-Britannique sont :",
+              details: [
+                "1. Être résident permanent ou citoyen canadiens",
+                "2. Avoir des revenus en dessous de la limite établie",
+                "3. Ne pas posséder une habitation",
+                "4. Répondre aux exigences spécifiques du programme"
+              ],
+              links: [
+                {
+                  text: "Exigences Détaillées",
+                  url: "https://www.bchousing.org/housing-assistance/rental-housing/subsidized-housing/eligibility"
+                },
+                {
+                  text: "Calculatrice de Revenus",
+                  url: "https://www.bchousing.org/housing-assistance/rental-housing/subsidized-housing/income-calculator"
+                }
+              ],
+              additionalInfo: "Les limites de revenu varient en fonction de la taille de la famille et de la localisation. Il est recommandé de vérifier les limites actuelles sur le site web de BC Housing."
             }
           }
         }
@@ -131,11 +185,13 @@ const qaConfig = {
     education: {
       name: {
         en: "Education",
-        es: "Educación"
+        es: "Educación",
+        fr: "Éducation"
       },
       description: {
         en: "Information about the education system, enrollment, and programs in BC",
-        es: "Información sobre el sistema educativo, inscripciones y programas en BC"
+        es: "Información sobre el sistema educativo, inscripciones y programas en BC",
+        fr: "Informations sur le système éducatif, les inscriptions et les programmes en Colombie-Britannique"
       },
       questions: [
         {
@@ -151,6 +207,12 @@ const qaConfig = {
               "inscripción escuela pública",
               "registrar hijo en escuela",
               "proceso de inscripción escolar"
+            ],
+            fr: [
+              "Comment inscrire mon enfant à l'école publique en Colombie-Britannique ?",
+              "processus d'inscription à l'école",
+              "inscrire l'enfant à l'école",
+              "inscription à l'école"
             ]
           },
           response: {
@@ -193,6 +255,26 @@ const qaConfig = {
                 }
               ],
               additionalInfo: "Es importante inscribir a tu hijo lo antes posible, especialmente si planeas comenzar en septiembre. Las escuelas pueden tener listas de espera."
+            },
+            fr: {
+              main: "Pour inscrire votre enfant à l'école publique en Colombie-Britannique, suivez ces étapes :",
+              details: [
+                "1. Contactez votre école locale",
+                "2. Fournissez les documents d'identité et de résidence",
+                "3. Remplissez le formulaire d'inscription",
+                "4. Fournissez les relevés de vaccination"
+              ],
+              links: [
+                {
+                  text: "Guide d'Inscription",
+                  url: "https://www2.gov.bc.ca/gov/content/education-training/k-12/support"
+                },
+                {
+                  text: "Trouvez Votre École",
+                  url: "https://www2.gov.bc.ca/gov/content/education-training/k-12/support/school-finder"
+                }
+              ],
+              additionalInfo: "Il est important d'inscrire votre enfant le plus tôt possible, surtout si vous prévoyez commencer en septembre. Les écoles peuvent avoir des listes d'attente."
             }
           }
         }

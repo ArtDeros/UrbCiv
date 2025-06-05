@@ -13,7 +13,12 @@ async function getOrCreateSession(sessionId) {
       createdAt: new Date(),
       lastActivity: new Date(),
       messages: [],
-      userData: {}
+      userData: {},
+      context: {
+        currentCategory: null,
+        lastQuestion: null,
+        lastResponse: null
+      }
     };
     sessions.set(sessionId, sessionData);
     
@@ -23,7 +28,8 @@ async function getOrCreateSession(sessionId) {
         createdAt: sessionData.createdAt,
         lastActivity: sessionData.lastActivity,
         messages: [],
-        userData: {}
+        userData: {},
+        context: sessionData.context
       });
     } catch (error) {
       console.error('Error creating session in Firebase:', error);
@@ -41,17 +47,25 @@ async function saveMessage(sessionId, message, response) {
       userMessage: message,
       botResponse: response,
       category: response.category,
-      confidence: response.confidence
+      confidence: response.confidence,
+      details: response.details
     };
     
     session.messages.push(messageData);
     session.lastActivity = new Date();
+    session.context = {
+      ...session.context,
+      lastQuestion: message,
+      lastResponse: response,
+      currentCategory: response.category || session.context.currentCategory
+    };
     
     // Guardar en Firebase
     try {
       await db.collection('sessions').doc(sessionId).update({
         messages: db.FieldValue.arrayUnion(messageData),
-        lastActivity: session.lastActivity
+        lastActivity: session.lastActivity,
+        context: session.context
       });
     } catch (error) {
       console.error('Error saving message to Firebase:', error);
@@ -62,7 +76,7 @@ async function saveMessage(sessionId, message, response) {
 // Función para procesar el mensaje del usuario
 async function processMessage(req, res) {
   try {
-    const { message, sessionId: clientSessionId } = req.body;
+    const { message, sessionId: clientSessionId, countryCode, language, userData } = req.body;
     
     if (!message) {
       return res.status(400).json({
@@ -74,8 +88,15 @@ async function processMessage(req, res) {
     // Obtener o crear sesión
     const sessionId = await getOrCreateSession(clientSessionId);
     
-    // Procesar la pregunta
-    const response = await processQuestion(message, sessionId);
+    // Procesar la pregunta con el contexto actual
+    const session = sessions.get(sessionId);
+    const response = await processQuestion(
+      message, 
+      sessionId, 
+      countryCode, 
+      language,
+      session?.context || {}
+    );
     
     // Guardar el mensaje y la respuesta
     await saveMessage(sessionId, message, response);
@@ -126,7 +147,8 @@ async function getSessionHistory(req, res) {
           createdAt: sessionData.createdAt,
           lastActivity: sessionData.lastActivity,
           userData: sessionData.userData,
-          messages: sessionData.messages
+          messages: sessionData.messages,
+          context: sessionData.context
         }
       });
     } catch (error) {

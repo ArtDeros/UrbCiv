@@ -24,8 +24,11 @@ import {
   MenuList,
   MenuItem,
   Badge,
+  List,
+  ListItem,
+  Link,
 } from '@chakra-ui/react'
-import { FaPaperPlane, FaHistory, FaShare, FaBookmark, FaRegBookmark } from 'react-icons/fa'
+import { FaPaperPlane, FaHistory, FaShare, FaBookmark, FaRegBookmark, FaCheck, FaExternalLinkAlt } from 'react-icons/fa'
 import { HamburgerIcon } from '@chakra-ui/icons'
 import axios from 'axios'
 import { useLocation } from '../contexts/LocationContext'
@@ -42,7 +45,73 @@ interface Message {
   suggestions?: Suggestion[];
   id?: string;
   isUser?: boolean;
+  details?: any;
 }
+
+const ExternalLinkIcon = () => (
+  <FaExternalLinkAlt size={16} />
+)
+
+const MessageDetails = ({ details, language }: { details: any, language: string }) => {
+  const isEnglish = language === 'en';
+  const isFrench = language === 'fr';
+
+  return (
+    <Box mt={4} p={4} bg={useColorModeValue('gray.50', 'gray.700')} borderRadius="md">
+      <VStack align="stretch" spacing={3}>
+        {/* Location Information */}
+        <Box>
+          <Text fontWeight="bold" mb={2}>
+            {isEnglish ? 'Location Information' : isFrench ? 'Informations de localisation' : 'Información de ubicación'}
+          </Text>
+          <Text>{details.location.name}</Text>
+          <Text>{details.location.address}</Text>
+          <Text>{details.location.phone}</Text>
+          <Text>{details.location.hours}</Text>
+        </Box>
+
+        {/* Available Services */}
+        <Box>
+          <Text fontWeight="bold" mb={2}>
+            {isEnglish ? 'Available Services' : isFrench ? 'Services disponibles' : 'Servicios disponibles'}
+          </Text>
+          <List spacing={1}>
+            {details.services.map((service: string, index: number) => (
+              <ListItem key={index}>
+                <ListIcon as={FaCheck} color="green.500" />
+                {service}
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        {/* Useful Links */}
+        <Box>
+          <Text fontWeight="bold" mb={2}>
+            {isEnglish ? 'Useful Links' : isFrench ? 'Liens utiles' : 'Enlaces útiles'}
+          </Text>
+          <List spacing={1}>
+            {details.links.map((link: any, index: number) => (
+              <ListItem key={index}>
+                <Link href={link.url} color="blue.500" isExternal>
+                  {link.title} <ExternalLinkIcon mx="2px" />
+                </Link>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        {/* Next Steps */}
+        <Box>
+          <Text fontWeight="bold" mb={2}>
+            {isEnglish ? 'Next Steps' : isFrench ? 'Prochaines étapes' : 'Próximos pasos'}
+          </Text>
+          <Text>{details.nextSteps}</Text>
+        </Box>
+      </VStack>
+    </Box>
+  );
+};
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([])
@@ -866,6 +935,13 @@ const Chat = () => {
                   alignSelf={message.isUser ? "flex-end" : "flex-start"}
                 >
                   <Text color={useColorModeValue('black', 'white')}>{message.text}</Text>
+                  
+                  {/* Mostrar detalles si existen */}
+                  {message.details && (
+                    <MessageDetails details={message.details} language={language} />
+                  )}
+                  
+                  {/* Mostrar sugerencias si existen */}
                   {message.suggestions && message.suggestions.length > 0 && (
                     <VStack spacing={2} align="stretch" mt={2}>
                       {message.suggestions.map((suggestion, index) => (

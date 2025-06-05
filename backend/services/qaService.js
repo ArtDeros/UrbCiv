@@ -24,6 +24,73 @@ const CONVERSATION_STATES = {
   ACTIVE: 'active'
 };
 
+// Base de datos de recursos por categoría
+const categoryResources = {
+  vivienda: {
+    en: {
+      links: [
+        { title: 'Housing Department', url: 'https://example.com/housing' },
+        { title: 'Rental Assistance', url: 'https://example.com/rental' }
+      ],
+      commonQuestions: [
+        'How do I apply for public housing?',
+        'What are the requirements for housing assistance?',
+        'Where can I find affordable housing?'
+      ],
+      locations: [
+        {
+          name: 'Main Housing Office',
+          address: '123 Main St, City',
+          phone: '555-0123',
+          hours: 'Mon-Fri 9AM-5PM',
+          services: ['Housing applications', 'Rental assistance', 'Housing counseling']
+        }
+      ]
+    },
+    es: {
+      links: [
+        { title: 'Departamento de Vivienda', url: 'https://example.com/vivienda' },
+        { title: 'Asistencia de Alquiler', url: 'https://example.com/alquiler' }
+      ],
+      commonQuestions: [
+        '¿Cómo solicito vivienda pública?',
+        '¿Cuáles son los requisitos para asistencia de vivienda?',
+        '¿Dónde puedo encontrar vivienda asequible?'
+      ],
+      locations: [
+        {
+          name: 'Oficina Principal de Vivienda',
+          address: '123 Calle Principal, Ciudad',
+          phone: '555-0123',
+          hours: 'Lun-Vie 9AM-5PM',
+          services: ['Solicitudes de vivienda', 'Asistencia de alquiler', 'Asesoría de vivienda']
+        }
+      ]
+    },
+    fr: {
+      links: [
+        { title: 'Département du Logement', url: 'https://example.com/logement' },
+        { title: 'Aide au Logement', url: 'https://example.com/aide-logement' }
+      ],
+      commonQuestions: [
+        'Comment faire une demande de logement social?',
+        'Quelles sont les conditions pour obtenir une aide au logement?',
+        'Où puis-je trouver un logement abordable?'
+      ],
+      locations: [
+        {
+          name: 'Bureau Principal du Logement',
+          address: '123 Rue Principale, Ville',
+          phone: '555-0123',
+          hours: 'Lun-Ven 9H-17H',
+          services: ['Demandes de logement', 'Aide au loyer', 'Conseil en logement']
+        }
+      ]
+    }
+  },
+  // ... (otras categorías similares)
+};
+
 // Función para detectar el idioma
 function detectLanguage(text) {
   const spanishWords = ['qué', 'cómo', 'dónde', 'cuándo', 'por qué', 'para qué', 'quién', 'cuál', 'los', 'las', 'el', 'la'];
@@ -145,6 +212,37 @@ function getContextSuggestions(category, language) {
   }
   
   return suggestions;
+}
+
+// Función para generar una respuesta detallada
+function generateDetailedResponse(category, question, language) {
+  const resources = categoryResources[category]?.[language];
+  if (!resources) return null;
+
+  // Buscar la ubicación más relevante
+  const location = resources.locations[0]; // Por ahora usamos la primera ubicación
+
+  // Construir la respuesta detallada
+  const response = {
+    text: `${question}\n\n`,
+    details: {
+      location: {
+        name: location.name,
+        address: location.address,
+        phone: location.phone,
+        hours: location.hours
+      },
+      services: location.services,
+      links: resources.links,
+      nextSteps: language === 'en' 
+        ? 'To proceed, please visit our office with the required documents.'
+        : language === 'es'
+        ? 'Para proceder, por favor visite nuestra oficina con los documentos requeridos.'
+        : 'Pour continuer, veuillez visiter notre bureau avec les documents requis.'
+    }
+  };
+
+  return response;
 }
 
 // Función para manejar el flujo de conversación inicial
@@ -288,107 +386,62 @@ function extractLinks(text) {
 }
 
 // Función principal para procesar preguntas
-async function processQuestion(userQuestion, sessionId) {
-  const language = detectLanguage(userQuestion);
-  
-  // Verificar si es una conversación inicial
-  const conversationRef = db.collection('conversations').doc(sessionId);
-  const conversationDoc = await conversationRef.get();
-  const conversationData = conversationDoc.exists ? conversationDoc.data() : { state: CONVERSATION_STATES.INITIAL };
-  
-  if (conversationData.state !== CONVERSATION_STATES.ACTIVE) {
-    return handleInitialConversation(sessionId, userQuestion, language);
-  }
-
-  // Detectar intención del usuario
-  const intent = detectIntent(userQuestion);
-  if (intent) {
-    const quickResponse = getQuickResponses(intent, language);
+async function processQuestion(message, sessionId, countryCode, language) {
+  try {
+    // Detectar la intención y palabras clave
+    const intent = detectIntent(message);
+    const keywords = detectKeywords(message);
+    
+    // Obtener respuestas rápidas si existen
+    const quickResponse = getQuickResponses(message, language);
     if (quickResponse) {
-      // Analizar la respuesta rápida
-      const analysis = analyzeResponse(quickResponse, userQuestion);
-      
       return {
-        success: true,
         text: quickResponse,
-        category: 'general',
-        confidence: 1.0,
-        suggestions: generateSuggestions(detectKeywords(userQuestion), language),
-        analysis: {
-          quality: analysis.quality.score,
-          bias: analysis.bias.score,
-          sentiment: analysis.sentiment
-        }
+        sessionId,
+        suggestions: generateSuggestions(intent, language)
       };
     }
-  }
 
-  const match = findBestMatch(userQuestion, language);
-  
-  if (match) {
-    const response = formatResponse(match.response, match.category, match.language);
-    
-    // Analizar la respuesta
-    const analysis = analyzeResponse(response.text, userQuestion);
-    
-    // Detectar palabras clave para sugerencias
-    const keywords = detectKeywords(userQuestion);
-    const suggestions = generateSuggestions(keywords, language);
-    
-    // Guardar la interacción con el análisis
-    await saveConversation(sessionId, {
-      lastQuestion: userQuestion,
-      lastResponse: response,
-      lastCategory: match.category,
-      lastInteraction: new Date().toISOString(),
-      analysis: {
-        quality: analysis.quality.score,
-        bias: analysis.bias.score,
-        sentiment: analysis.sentiment,
-        suggestions: analysis.suggestions
-      }
-    });
+    // Si no hay respuesta rápida, buscar en las categorías
+    for (const [category, resources] of Object.entries(categoryResources)) {
+      const langResources = resources[language];
+      if (langResources) {
+        // Buscar coincidencias en las preguntas comunes
+        const matchingQuestion = langResources.commonQuestions.find(q => 
+          q.toLowerCase().includes(message.toLowerCase())
+        );
 
-    return {
-      success: true,
-      ...response,
-      confidence: match.similarity,
-      suggestions,
-      analysis: {
-        quality: analysis.quality.score,
-        bias: analysis.bias.score,
-        sentiment: analysis.sentiment
+        if (matchingQuestion) {
+          const detailedResponse = generateDetailedResponse(category, matchingQuestion, language);
+          if (detailedResponse) {
+            return {
+              text: detailedResponse.text,
+              details: detailedResponse.details,
+              sessionId,
+              suggestions: langResources.commonQuestions.map(q => ({
+                text: q,
+                category
+              }))
+            };
+          }
+        }
       }
-    };
-  }
-  
-  const noMatchResponse = {
-    en: "I'm sorry, I don't have specific information about that question. Could you rephrase it or ask about another topic?",
-    es: "Lo siento, no tengo información específica sobre esa pregunta. ¿Podrías reformularla o preguntar sobre otro tema?"
-  };
-  
-  // Analizar la respuesta de no coincidencia
-  const analysis = analyzeResponse(noMatchResponse[language], userQuestion);
-  
-  // Generar sugerencias basadas en palabras clave detectadas
-  const keywords = detectKeywords(userQuestion);
-  const suggestions = generateSuggestions(keywords, language);
-  
-  return {
-    success: false,
-    text: noMatchResponse[language],
-    category: null,
-    confidence: 0,
-    timestamp: new Date().toISOString(),
-    links: [],
-    language,
-    suggestions: suggestions.length > 0 ? suggestions : generateSuggestions(['housing', 'education', 'transportation'], language),
-    analysis: {
-      quality: analysis.quality.score,
-      bias: analysis.bias.score,
-      sentiment: analysis.sentiment
     }
-  };
+
+    // Si no se encuentra una respuesta específica
+    return {
+      text: language === 'en'
+        ? "I'm sorry, I couldn't find specific information about that. Could you please rephrase your question or select a category from the sidebar?"
+        : language === 'es'
+        ? "Lo siento, no pude encontrar información específica sobre eso. ¿Podrías reformular tu pregunta o seleccionar una categoría del panel lateral?"
+        : "Je suis désolé, je n'ai pas pu trouver d'informations spécifiques à ce sujet. Pourriez-vous reformuler votre question ou sélectionner une catégorie dans la barre latérale?",
+      sessionId,
+      suggestions: generateSuggestions(intent, language)
+    };
+  } catch (error) {
+    console.error('Error processing question:', error);
+    throw error;
+  }
 }
 
 // Función para guardar la calificación de una respuesta
@@ -457,5 +510,6 @@ module.exports = {
   saveResponseRating,
   saveFavoriteResponse,
   getContextSuggestions,
-  handleInitialConversation
+  handleInitialConversation,
+  categoryResources
 }; 
