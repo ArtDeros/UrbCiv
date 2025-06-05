@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type Language = 'en' | 'es' | 'fr';
 
@@ -12,8 +12,22 @@ interface LocationContextType {
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
 export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
-  const [countryCode, setCountryCode] = useState('CA');
+  const [language, setLanguage] = useState<Language>(() => {
+    const savedLanguage = localStorage.getItem('language') as Language;
+    return savedLanguage || 'en';
+  });
+  const [countryCode, setCountryCode] = useState(() => {
+    const savedCountryCode = localStorage.getItem('countryCode');
+    return savedCountryCode || 'CA';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem('countryCode', countryCode);
+  }, [countryCode]);
 
   return (
     <LocationContext.Provider value={{ language, setLanguage, countryCode, setCountryCode }}>

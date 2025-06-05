@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Select, useColorModeValue } from '@chakra-ui/react';
 import { useLocation, Language } from '../contexts/LocationContext';
 
@@ -7,7 +8,10 @@ const LanguageSelector = () => {
   const borderColor = useColorModeValue('gray.200', 'gray.600');
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setLanguage(e.target.value as Language);
+    const newLanguage = e.target.value as Language;
+    setLanguage(newLanguage);
+    // Forzar recarga de la página para asegurar que todos los componentes se actualicen
+    window.location.reload();
   };
 
   return (
