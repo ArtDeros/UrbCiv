@@ -1,45 +1,43 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-export type Language = 'en' | 'es' | 'fr';
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+type Language = 'en' | 'es' | 'fr';
 
 interface LocationContextType {
   language: Language;
   setLanguage: (language: Language) => void;
-  countryCode: string;
-  setCountryCode: (code: string) => void;
+  location: Location | null;
+  updateLocation: (location: Location) => void;
 }
 
-const LocationContext = createContext<LocationContextType | undefined>(undefined);
+const LocationContext = createContext<LocationContextType>({
+  language: 'en',
+  setLanguage: () => {},
+  location: null,
+  updateLocation: () => {},
+});
 
-export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>(() => {
-    const savedLanguage = localStorage.getItem('language') as Language;
-    return savedLanguage || 'en';
-  });
-  const [countryCode, setCountryCode] = useState(() => {
-    const savedCountryCode = localStorage.getItem('countryCode');
-    return savedCountryCode || 'CA';
-  });
+export const useLocation = () => useContext(LocationContext);
 
-  useEffect(() => {
-    localStorage.setItem('language', language);
-  }, [language]);
+interface LocationProviderProps {
+  children: ReactNode;
+}
 
-  useEffect(() => {
-    localStorage.setItem('countryCode', countryCode);
-  }, [countryCode]);
+export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) => {
+  const [language, setLanguage] = useState<Language>('en');
+  const [location, setLocation] = useState<Location | null>(null);
+
+  const updateLocation = (newLocation: Location) => {
+    setLocation(newLocation);
+  };
 
   return (
-    <LocationContext.Provider value={{ language, setLanguage, countryCode, setCountryCode }}>
+    <LocationContext.Provider value={{ language, setLanguage, location, updateLocation }}>
       {children}
     </LocationContext.Provider>
   );
-};
-
-export const useLocation = () => {
-  const context = useContext(LocationContext);
-  if (context === undefined) {
-    throw new Error('useLocation must be used within a LocationProvider');
-  }
-  return context;
 }; 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Select, useColorModeValue } from '@chakra-ui/react';
 import { useLocation, Language } from '../contexts/LocationContext';
+import { languages } from '../config/language_config';
 
 const LanguageSelector = () => {
   const { language, setLanguage } = useLocation();
@@ -37,9 +38,11 @@ const LanguageSelector = () => {
           bg: useColorModeValue('gray.100', 'gray.600')
         }}
       >
-        <option value="en">English 🇺🇸</option>
-        <option value="es">Español 🇪🇸</option>
-        <option value="fr">Français 🇫🇷</option>
+        {Object.entries(languages).map(([code, { name, flag }]) => (
+          <option key={code} value={code}>
+            {name} {flag}
+          </option>
+        ))}
       </Select>
     </Box>
   );
