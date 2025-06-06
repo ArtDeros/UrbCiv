@@ -4,28 +4,15 @@ import {
   SimpleGrid,
   Button,
   Text,
-  VStack,
   useColorModeValue,
-  Icon,
-  Flex,
-  Badge,
-  Tooltip,
   useBreakpointValue
 } from '@chakra-ui/react';
-import { FaHome, FaHeartbeat, FaGraduationCap } from 'react-icons/fa';
-import { CategoryKey } from '../types/chat';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface ChatSuggestionsProps {
   onSuggestionClick: (category: string) => void;
   category: string | null;
 }
-
-const categoryIcons = {
-  vivienda: FaHome,
-  salud: FaHeartbeat,
-  educacion: FaGraduationCap,
-};
 
 type CategoryType = {
   [key: string]: string[];
@@ -118,13 +105,9 @@ const categories: CategoriesType = {
   }
 };
 
-const ChatSuggestions: React.FC<ChatSuggestionsProps> = ({ onSuggestionClick, category }) => {
+const ChatSuggestions: React.FC<ChatSuggestionsProps> = ({ onSuggestionClick }) => {
   const { language } = useLanguage();
   const isMobile = useBreakpointValue({ base: true, md: false });
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
-  const hoverBg = useColorModeValue('blue.50', 'blue.900');
-
   const currentCategories = categories[language as keyof typeof categories];
 
   return (

@@ -1,50 +1,32 @@
 import React from 'react';
-import { Box, Select, useColorModeValue } from '@chakra-ui/react';
-import { useLocation, Language } from '../contexts/LocationContext';
-import { languages } from '../config/language_config';
+import { Button, HStack } from '@chakra-ui/react';
+import { FaLanguage } from 'react-icons/fa';
+import { useLanguage } from '../contexts/LanguageContext';
+import { languages, LanguageConfig } from '../config/language_config';
 
-const LanguageSelector = () => {
-  const { language, setLanguage } = useLocation();
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLanguage = e.target.value as Language;
-    setLanguage(newLanguage);
-    // Forzar recarga de la página para asegurar que todos los componentes se actualicen
-    window.location.reload();
-  };
+const LanguageSelector: React.FC = () => {
+  const { language, setLanguage } = useLanguage();
 
   return (
-    <Box
-      position="fixed"
-      top={4}
-      right={4}
-      zIndex={1000}
-      bg={bgColor}
-      p={2}
-      borderRadius="md"
-      boxShadow="sm"
-      border="1px solid"
-      borderColor={borderColor}
-    >
-      <Select
-        value={language}
-        onChange={handleLanguageChange}
-        size="sm"
-        variant="filled"
-        bg={useColorModeValue('gray.50', 'gray.700')}
-        _hover={{
-          bg: useColorModeValue('gray.100', 'gray.600')
-        }}
-      >
-        {Object.entries(languages).map(([code, { name, flag }]) => (
-          <option key={code} value={code}>
-            {name} {flag}
-          </option>
-        ))}
-      </Select>
-    </Box>
+    <HStack spacing={2}>
+      {languages.map((lang: LanguageConfig) => (
+        <Button
+          key={lang.code}
+          size="sm"
+          variant={language === lang.code ? 'solid' : 'outline'}
+          onClick={() => setLanguage(lang.code as 'en' | 'fr' | 'es')}
+          leftIcon={<FaLanguage />}
+          colorScheme="blue"
+          bg={language === lang.code ? 'blue.500' : 'transparent'}
+          color={language === lang.code ? 'white' : 'white'}
+          _hover={{
+            bg: language === lang.code ? 'blue.600' : 'whiteAlpha.200'
+          }}
+        >
+          {lang.code.toUpperCase()}
+        </Button>
+      ))}
+    </HStack>
   );
 };
 
