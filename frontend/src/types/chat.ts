@@ -1,4 +1,4 @@
-export type Language = 'en' | 'es' | 'fr';
+export type Language = 'en' | 'fr' | 'es';
 export type CategoryKey = 'vivienda' | 'salud' | 'educacion';
 
 interface LocalizedText {
@@ -19,34 +19,39 @@ export interface Category {
   }>;
 }
 
+export interface MessageDetails {
+  location?: {
+    name: string;
+    address: string;
+    phone: string;
+    hours: string;
+  };
+  services?: string[];
+  links?: { title: string; url: string; }[];
+  nextSteps?: string;
+}
+
 export interface Message {
   id: string;
   text: string;
   sender: 'user' | 'assistant';
   timestamp: string;
   isUser: boolean;
-  details?: {
-    location?: {
-      latitude: number;
-      longitude: number;
-    };
-    services?: string[];
-    links?: string[];
-    nextSteps?: string[];
-  };
+  details?: MessageDetails;
   rating?: 'positive' | 'negative';
   isFavorite?: boolean;
-}
-
-export interface SavedResponse {
-  id: string;
-  messageId: string;
-  text: string;
-  timestamp: string;
 }
 
 export interface Conversation {
   id: string;
   messages: Message[];
-  timestamp: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SavedResponse {
+  id: string;
+  messageId: string;
+  conversationId: string;
+  createdAt: string;
 } 

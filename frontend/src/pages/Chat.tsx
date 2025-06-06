@@ -41,9 +41,10 @@ import { HamburgerIcon } from '@chakra-ui/icons'
 import axios from 'axios'
 import { useLocation } from '../contexts/LocationContext'
 import type { Message, SavedResponse, CategoryKey, Conversation } from '../types/chat'
-import { API_URL } from '../config/api'
-import { ChatSuggestions } from '../components/ChatSuggestions'
+import { ENDPOINTS } from '../config/api'
+import ChatSuggestions from '../components/ChatSuggestions'
 import { MessageDetails } from '../components/MessageDetails'
+import { useLanguage } from '../contexts/LanguageContext'
 
 const ExternalLinkIcon = () => (
   <Box as="span" mx="2px">
@@ -69,15 +70,6 @@ const Chat = () => {
   const [showMap, setShowMap] = useState(false);
   const [mapUrl, setMapUrl] = useState('');
   const { colorMode, toggleColorMode } = useColorMode();
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     // Solicitar ubicación silenciosamente al iniciar
@@ -162,7 +154,7 @@ const Chat = () => {
     // Cargar conversaciones guardadas
     const loadConversations = async () => {
       try {
-        const response = await axios.get(`${API_URL}/chat/conversations`)
+        const response = await axios.get(`${ENDPOINTS.CHAT}/conversations`)
         setConversations(response.data)
       } catch (error) {
         console.error('Error loading conversations:', error)
@@ -246,7 +238,7 @@ const Chat = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/chat`, {
+      const response = await axios.post(`${ENDPOINTS.CHAT}`, {
         message: input,
         language,
         location: location ? { latitude: location.latitude, longitude: location.longitude } : null
@@ -285,7 +277,7 @@ const Chat = () => {
     if (!selectedConversation) return
 
     try {
-      await axios.post(`${API_URL}/chat/rate`, {
+      await axios.post(`${ENDPOINTS.CHAT}/rate`, {
         sessionId: selectedConversation,
         messageId,
         rating,
@@ -343,7 +335,7 @@ const Chat = () => {
     if (!selectedConversation) return
 
     try {
-      const response = await axios.post(`${API_URL}/chat/favorite`, {
+      const response = await axios.post(`${ENDPOINTS.CHAT}/favorite`, {
         sessionId: selectedConversation,
         messageId,
       })
@@ -406,7 +398,8 @@ const Chat = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        bg: 'rgba(0, 0, 0, 0.5)',
+        bg: 'rgba(0, 0, 0, 0.4)',
+        backdropFilter: 'blur(2px)',
         zIndex: 0
       }}
     >
@@ -419,7 +412,7 @@ const Chat = () => {
       >
         <VStack spacing={4} align="stretch" flex={1}>
           <Flex justify="space-between" align="center" mb={4}>
-            <Heading as="h1" size={isMobile ? "lg" : "xl"} color="white">
+            <Heading as="h1" size={isMobile ? "lg" : "xl"} color="white" textShadow="2px 2px 4px rgba(0,0,0,0.5)">
               {language === 'en' ? 'Government Services Assistant' : language === 'fr' ? 'Assistant aux Services Gouvernementaux' : 'Asistente de Servicios Gubernamentales'}
             </Heading>
             <HStack spacing={2}>
@@ -562,7 +555,19 @@ const Chat = () => {
                     >
                       <Text fontSize={isMobile ? "sm" : "md"}>{message.text}</Text>
                       {message.details && (
-                        <MessageDetails details={message.details} language={language} />
+                        <MessageDetails 
+                          details={{
+                            ...message.details,
+                            location: message.details.location && 
+                              'name' in message.details.location ? 
+                              message.details.location as MessageDetails['location'] : 
+                              undefined,
+                            links: message.details.links?.map(link => 
+                              typeof link === 'string' ? { title: link, url: link } : link
+                            )
+                          }} 
+                          language={language} 
+                        />
                       )}
                     </Box>
                   </Box>

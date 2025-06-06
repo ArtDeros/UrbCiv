@@ -13,12 +13,12 @@ import {
   useBreakpointValue
 } from '@chakra-ui/react';
 import { FaHome, FaHeartbeat, FaGraduationCap } from 'react-icons/fa';
-import { categories } from '../config/qa_config';
 import { CategoryKey } from '../types/chat';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ChatSuggestionsProps {
-  onSuggestionClick: (suggestion: string, category?: CategoryKey) => void;
-  category?: CategoryKey;
+  onSuggestionClick: (category: string) => void;
+  category: string | null;
 }
 
 const categoryIcons = {
@@ -27,95 +27,159 @@ const categoryIcons = {
   educacion: FaGraduationCap,
 };
 
+type CategoryType = {
+  [key: string]: string[];
+};
+
+type CategoriesType = {
+  en: CategoryType;
+  fr: CategoryType;
+  es: CategoryType;
+};
+
+const categories: CategoriesType = {
+  en: {
+    'Government Services': [
+      'Passport Application',
+      'Driver\'s License',
+      'Health Card',
+      'Tax Information'
+    ],
+    'Transportation': [
+      'Public Transit',
+      'Road Conditions',
+      'Parking Information',
+      'Bike Routes'
+    ],
+    'Housing': [
+      'Rent Assistance',
+      'Home Buying',
+      'Property Tax',
+      'Housing Programs'
+    ],
+    'Education': [
+      'School Registration',
+      'Student Loans',
+      'Scholarships',
+      'Adult Education'
+    ]
+  },
+  fr: {
+    'Services Gouvernementaux': [
+      'Demande de Passeport',
+      'Permis de Conduire',
+      'Carte Santé',
+      'Informations Fiscales'
+    ],
+    'Transport': [
+      'Transport en Commun',
+      'Conditions Routières',
+      'Information de Stationnement',
+      'Pistes Cyclables'
+    ],
+    'Logement': [
+      'Aide au Loyer',
+      'Achat de Maison',
+      'Taxe Foncière',
+      'Programmes de Logement'
+    ],
+    'Éducation': [
+      'Inscription Scolaire',
+      'Prêts Étudiants',
+      'Bourses',
+      'Éducation des Adultes'
+    ]
+  },
+  es: {
+    'Servicios Gubernamentales': [
+      'Solicitud de Pasaporte',
+      'Licencia de Conducir',
+      'Tarjeta de Salud',
+      'Información Fiscal'
+    ],
+    'Transporte': [
+      'Transporte Público',
+      'Condiciones Viales',
+      'Información de Estacionamiento',
+      'Rutas en Bicicleta'
+    ],
+    'Vivienda': [
+      'Asistencia de Renta',
+      'Compra de Vivienda',
+      'Impuesto Predial',
+      'Programas de Vivienda'
+    ],
+    'Educación': [
+      'Registro Escolar',
+      'Préstamos Estudiantiles',
+      'Becas',
+      'Educación de Adultos'
+    ]
+  }
+};
+
 const ChatSuggestions: React.FC<ChatSuggestionsProps> = ({ onSuggestionClick, category }) => {
+  const { language } = useLanguage();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
   const hoverBg = useColorModeValue('blue.50', 'blue.900');
 
-  if (category) {
-    const categoryData = categories[category];
-    return (
-      <Box>
-        <Text fontSize="lg" fontWeight="bold" mb={4} color="blue.600">
-          {categoryData.name}
-        </Text>
-        <SimpleGrid columns={isMobile ? 1 : 2} spacing={4}>
-          {categoryData.suggestions.map((suggestion, index) => (
-            <Button
-              key={index}
-              onClick={() => onSuggestionClick(suggestion.text)}
-              variant="outline"
-              size="lg"
-              height="auto"
-              p={4}
-              whiteSpace="normal"
-              textAlign="left"
-              justifyContent="flex-start"
-              bg={bgColor}
-              borderColor={borderColor}
-              _hover={{
-                bg: hoverBg,
-                transform: 'translateY(-2px)',
-                shadow: 'md'
-              }}
-              transition="all 0.2s"
-            >
-              <VStack align="start" spacing={2}>
-                <Text fontWeight="medium">{suggestion.text}</Text>
-                <Badge colorScheme="blue" fontSize="xs">
-                  {suggestion.category}
-                </Badge>
-              </VStack>
-            </Button>
-          ))}
-        </SimpleGrid>
-      </Box>
-    );
-  }
+  const currentCategories = categories[language as keyof typeof categories];
 
   return (
     <Box>
-      <Text fontSize="xl" fontWeight="bold" mb={6} color="blue.600">
-        Select a category to get started
+      <Text
+        fontSize={isMobile ? "lg" : "xl"}
+        fontWeight="bold"
+        mb={4}
+        color="gray.700"
+      >
+        {language === 'en' ? 'Select a Category' : language === 'fr' ? 'Sélectionnez une Catégorie' : 'Selecciona una Categoría'}
       </Text>
-      <SimpleGrid columns={isMobile ? 1 : 3} spacing={6}>
-        {Object.entries(categories).map(([key, data]) => (
-          <Button
-            key={key}
-            onClick={() => onSuggestionClick(key as CategoryKey)}
-            variant="outline"
-            size="lg"
-            height="auto"
-            p={6}
-            bg={bgColor}
-            borderColor={borderColor}
+      <SimpleGrid columns={isMobile ? 1 : 2} spacing={4}>
+        {Object.entries(currentCategories).map(([categoryName, suggestions]) => (
+          <Box
+            key={categoryName}
+            p={4}
+            borderRadius="lg"
+            bg="white"
+            boxShadow="md"
             _hover={{
-              bg: hoverBg,
               transform: 'translateY(-2px)',
-              shadow: 'lg'
+              boxShadow: 'lg'
             }}
             transition="all 0.2s"
           >
-            <VStack spacing={4} align="center" w="100%">
-              <Icon
-                as={categoryIcons[key as CategoryKey]}
-                boxSize={8}
-                color="blue.500"
-              />
-              <Box textAlign="center">
-                <Text fontWeight="bold" fontSize="lg" mb={2}>
-                  {data.name}
-                </Text>
-                <Text fontSize="sm" color="gray.600">
-                  {data.description}
-                </Text>
-              </Box>
-              <Badge colorScheme="blue" fontSize="xs">
-                {data.suggestions.length} questions
-              </Badge>
-            </VStack>
-          </Button>
+            <Text
+              fontSize={isMobile ? "md" : "lg"}
+              fontWeight="semibold"
+              mb={3}
+              color="blue.600"
+            >
+              {categoryName}
+            </Text>
+            <SimpleGrid columns={1} spacing={2}>
+              {suggestions.map((suggestion: string) => (
+                <Button
+                  key={suggestion}
+                  size={isMobile ? "sm" : "md"}
+                  variant="outline"
+                  colorScheme="blue"
+                  onClick={() => onSuggestionClick(suggestion)}
+                  width="100%"
+                  justifyContent="flex-start"
+                  _hover={{
+                    bg: 'blue.50',
+                    transform: 'translateX(4px)'
+                  }}
+                  transition="all 0.2s"
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </SimpleGrid>
+          </Box>
         ))}
       </SimpleGrid>
     </Box>
