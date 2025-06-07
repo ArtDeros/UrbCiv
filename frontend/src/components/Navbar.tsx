@@ -1,69 +1,80 @@
 import React from 'react';
 import {
   Box,
-  Flex,
   Button,
-  useColorModeValue,
-  Stack,
-  useColorMode,
+  Flex,
+  HStack,
   IconButton,
-  HStack
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  useColorMode,
+  useColorModeValue,
 } from '@chakra-ui/react';
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { Link as RouterLink } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
-import { translations } from '../config/language_config';
-import LanguageSelector from './LanguageSelector';
+import { FaMoon, FaSun, FaGlobe } from 'react-icons/fa';
+import { useLanguage } from '../context/LanguageContext';
 
 const Navbar: React.FC = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { language } = useLanguage();
-  const t = translations[language as keyof typeof translations];
+  const { language, setLanguage } = useLanguage();
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'fr', name: 'Français' },
+    { code: 'es', name: 'Español' },
+  ];
 
   return (
     <Box
-      bg={useColorModeValue('white', 'gray.900')}
-      px={4}
-      position="sticky"
-      top={0}
+      as="nav"
+      position="fixed"
+      w="100%"
+      bg={bgColor}
+      borderBottom="1px"
+      borderColor={borderColor}
       zIndex={1000}
-      boxShadow="sm"
     >
-      <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-        <HStack spacing={8} alignItems={'center'}>
-          <Box
-            as={RouterLink}
-            to="/"
-            fontWeight="bold"
-            fontSize="xl"
-            color={useColorModeValue('blue.600', 'blue.400')}
-            _hover={{ textDecoration: 'none' }}
-          >
-            MAPLE
-          </Box>
-          <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
-            <Button
-              as={RouterLink}
-              to="/chat"
-              variant="ghost"
-              colorScheme="blue"
-            >
-              {t.chat.title}
-            </Button>
-          </HStack>
+      <Flex
+        h={16}
+        alignItems="center"
+        justifyContent="space-between"
+        px={4}
+        maxW="container.xl"
+        mx="auto"
+      >
+        <HStack spacing={4}>
+          <IconButton
+            aria-label="Toggle color mode"
+            icon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
+            onClick={toggleColorMode}
+            variant="ghost"
+          />
         </HStack>
 
-        <Flex alignItems={'center'}>
-          <Stack direction={'row'} spacing={4} alignItems="center">
-            <LanguageSelector />
-            <IconButton
-              aria-label="Toggle color mode"
-              icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-              onClick={toggleColorMode}
+        <HStack spacing={4}>
+          <Menu>
+            <MenuButton
+              as={Button}
+              leftIcon={<FaGlobe />}
               variant="ghost"
-            />
-          </Stack>
-        </Flex>
+            >
+              {languages.find(lang => lang.code === language)?.name}
+            </MenuButton>
+            <MenuList>
+              {languages.map((lang) => (
+                <MenuItem
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code as 'en' | 'fr' | 'es')}
+                >
+                  {lang.name}
+                </MenuItem>
+              ))}
+            </MenuList>
+          </Menu>
+        </HStack>
       </Flex>
     </Box>
   );

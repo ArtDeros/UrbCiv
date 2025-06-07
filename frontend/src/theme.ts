@@ -9,16 +9,16 @@ const config: ThemeConfig = {
 const theme = extendTheme({
   config,
   styles: {
-    global: (props: any) => ({
+    global: {
       body: {
-        bg: props.colorMode === 'dark' ? 'gray.800' : 'gray.50',
-        color: props.colorMode === 'dark' ? 'white' : 'gray.800',
+        bg: 'gray.50',
+        color: 'gray.800',
       },
-    }),
+    },
   },
   fonts: {
-    heading: 'Inter, sans-serif',
-    body: 'Inter, sans-serif',
+    heading: 'Inter, system-ui, sans-serif',
+    body: 'Inter, system-ui, sans-serif',
   },
   colors: {
     brand: {
@@ -78,6 +78,11 @@ const theme = extendTheme({
           bg: props.colorMode === 'dark' ? 'gray.800' : 'white',
         },
       }),
+    },
+    Heading: {
+      baseStyle: {
+        fontWeight: 'bold',
+      },
     },
   },
 })

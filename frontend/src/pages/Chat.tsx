@@ -45,6 +45,7 @@ import { ENDPOINTS } from '../config/api'
 import ChatSuggestions from '../components/ChatSuggestions'
 import { MessageDetails } from '../components/MessageDetails'
 import { useLanguage } from '../contexts/LanguageContext'
+import { useSearchParams } from 'react-router-dom'
 
 const ExternalLinkIcon = () => (
   <Box as="span" mx="2px">
@@ -70,6 +71,14 @@ const Chat = () => {
   const [showMap, setShowMap] = useState(false);
   const [mapUrl, setMapUrl] = useState('');
   const { colorMode, toggleColorMode } = useColorMode();
+  const { translations } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get('category');
+
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const userBg = useColorModeValue('blue.50', 'blue.900');
+  const botBg = useColorModeValue('gray.50', 'gray.700');
 
   useEffect(() => {
     // Solicitar ubicación silenciosamente al iniciar
@@ -92,6 +101,18 @@ const Chat = () => {
     // Mostrar mensaje de bienvenida al iniciar
     handleStartChat();
   }, [language]);
+
+  useEffect(() => {
+    if (category) {
+      const welcomeMessage = {
+        id: Date.now().toString(),
+        text: translations[language].categories[category as keyof typeof translations[typeof language]['categories']],
+        sender: 'bot' as const,
+        timestamp: new Date(),
+      };
+      setMessages([welcomeMessage]);
+    }
+  }, [category, language, translations]);
 
   const handleLocationRequest = () => {
     if (navigator.geolocation) {
@@ -241,7 +262,8 @@ const Chat = () => {
       const response = await axios.post(`${ENDPOINTS.CHAT}`, {
         message: input,
         language,
-        location: location ? { latitude: location.latitude, longitude: location.longitude } : null
+        location: location ? { latitude: location.latitude, longitude: location.longitude } : null,
+        category,
       });
 
       const assistantMessage: Message = {
