@@ -10,7 +10,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: '/UrbCiv/',
+  base: process.env.NODE_ENV === 'production' ? '/UrbCiv/' : '/',
   server: {
     port: 3000,
     host: true,

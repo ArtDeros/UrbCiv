@@ -20,17 +20,14 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import { FaHome, FaGraduationCap, FaIdCard, FaBus, FaHandHoldingHeart, FaHeartbeat, FaBriefcase, FaBalanceScale, FaRobot, FaGlobe, FaClock, FaShieldAlt, FaBuilding, FaUser } from 'react-icons/fa'
-import { useLocation } from '../contexts/LocationContext.js'
-import { useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { translations } from '../config/language_config'
+import { useState } from 'react'
 
 const Home: React.FC = () => {
   const navigate = useNavigate()
-  const { language } = useLocation()
-  const { language: languageContext } = useLanguage()
-  const t = translations[languageContext as keyof typeof translations]
-  const isEnglish = language === 'en'
+  const { language } = useLanguage()
+  const t = translations[language as keyof typeof translations]
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [selectedService, setSelectedService] = useState<any>(null)
 
