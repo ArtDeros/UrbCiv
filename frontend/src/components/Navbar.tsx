@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
             color={useColorModeValue('blue.600', 'blue.400')}
             _hover={{ textDecoration: 'none' }}
           >
-            UrbCiv
+            MAPLE
           </Box>
           <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
             <Button

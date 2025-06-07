@@ -1,74 +1,57 @@
-# UrbCiv Chat
+# MAPLE
 
-Un chatbot inteligente para asistencia ciudadana, desarrollado con React, Node.js y Firebase.
+**Meaningful Assistance for People Living Everywhere**
 
-## Características
+MAPLE es un asistente inteligente que combina APIs oficiales (gobierno, cultura, negocios) y RAG para ofrecer respuestas confiables, contextualizadas y escalables para personas en Canadá.
 
-- 💬 Chat interactivo en tiempo real
-- 🌐 Soporte multilingüe (Español/Inglés)
-- 🤖 Procesamiento de lenguaje natural
-- 📊 Análisis de calidad y sesgo
-- 🔍 Sugerencias contextuales
-- 💾 Persistencia de conversaciones
-- 📱 Interfaz responsive
+## Instalación y uso rápido
 
-## Tecnologías
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/tuusuario/MAPLE.git
+   cd MAPLE
+   ```
+2. Configura las variables de entorno en `backend/.env`:
+   ```env
+   CANADA_OPEN_DATA_KEY=tu_api_key
+   VANCOUVER_OPEN_DATA_KEY=tu_api_key
+   BC_DATA_KEY=tu_api_key
+   YELP_API_KEY=tu_api_key
+   GOOGLE_MAPS_KEY=tu_api_key
+   FRONTEND_URL=http://localhost:3000
+   ```
+3. Ejecuta el sistema:
+   ```bash
+   ./start.bat
+   ```
 
-- Frontend: React, TypeScript, Chakra UI
-- Backend: Node.js, Express
-- Base de datos: Firebase
-- NLP: Natural
-- Despliegue: Vercel
+## Endpoints principales
 
-## Configuración del Entorno
+- `/query` (POST): Consulta general (RAG)
+- `/tourist-events?location=Vancouver&type=event` (GET): Eventos turísticos
+- `/local-businesses?location=Vancouver&category=restaurants` (GET): Restaurantes y comida
+- `/emergency-help?location=Vancouver` (GET): Ayuda de emergencia
+- `/immigrant-services?language=es` (GET): Servicios para inmigrantes
+- `/housing?location=Vancouver` (GET): Información de vivienda
+- `/geolocation?address=Stanley+Park+Vancouver` (GET): Geolocalización
 
-1. Clonar el repositorio
-```bash
-git clone https://github.com/tu-usuario/chatbot-gobierno.git
-cd chatbot-gobierno
+## Ejemplo de respuesta
+```json
+{
+  "place": "Stanley Park",
+  "category": "Nature",
+  "open_hours": "6AM - 11PM",
+  "map_link": "https://maps.google.com/?q=stanley+park",
+  "tips": "Ideal para caminar, andar en bici y picnic."
+}
 ```
 
-2. Instalar dependencias
-```bash
-# Backend
-cd backend
-npm install
+## Pruebas
+Puedes probar los endpoints con Postman o desde el frontend. El chatbot detecta automáticamente la intención y llama a la API adecuada.
 
-# Frontend
-cd ../frontend
-npm install
-```
-
-3. Configurar variables de entorno
-Crear archivo `.env` en la carpeta backend con:
-```
-FIREBASE_PROJECT_ID=tu-project-id
-FIREBASE_PRIVATE_KEY=tu-private-key
-FIREBASE_CLIENT_EMAIL=tu-client-email
-FIREBASE_DATABASE_URL=tu-database-url
-```
-
-4. Iniciar desarrollo
-```bash
-# Backend
-cd backend
-npm run dev
-
-# Frontend
-cd frontend
-npm run dev
-```
-
-## Estructura del Proyecto
-
-```
-chatbot-gobierno/
-├── frontend/          # Aplicación React
-├── backend/           # Servidor Node.js
-├── .gitignore        # Archivos ignorados por git
-└── vercel.json       # Configuración de Vercel
-```
+## Personalización y escalabilidad
+- Puedes agregar nuevas APIs en `backend/services/government_apis.py`.
+- Para autenticación, consulta la sección `auth` (próximamente).
 
 ## Licencia
-
 MIT 

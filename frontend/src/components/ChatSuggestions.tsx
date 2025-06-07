@@ -1,222 +1,64 @@
-import React from 'react';
-import {
-  Box,
-  SimpleGrid,
-  Button,
-  Text,
-  useColorModeValue,
-  useBreakpointValue,
-  Container
-} from '@chakra-ui/react';
-import { useLanguage } from '../contexts/LanguageContext';
+import React, { useState } from 'react';
+import { useChat } from '../context/ChatContext';
 
-// Importar imágenes directamente
-import monGov from '../assets/Mon gov.jpg';
-import vanGov from '../assets/Van gov.jpg';
-import torGov from '../assets/Tor gov.jpg';
-
-interface ChatSuggestionsProps {
-  onSuggestionClick: (category: string) => void;
-  category: string | null;
+interface Suggestion {
+  id: string;
+  text: string;
 }
 
-type CategoryType = {
-  [key: string]: string[];
-};
+const ChatSuggestions: React.FC = () => {
+  const { sendMessage } = useChat();
+  const [loading, setLoading] = useState(false);
 
-type CategoriesType = {
-  en: CategoryType;
-  fr: CategoryType;
-  es: CategoryType;
-};
+  const handleSuggestionClick = async (suggestion: Suggestion) => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8000/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: suggestion.text,
+          language: 'es'
+        }),
+      });
 
-const categories: CategoriesType = {
-  en: {
-    'Government Services': [
-      'Passport Application',
-      'Driver\'s License',
-      'Health Card',
-      'Tax Information'
-    ],
-    'Transportation': [
-      'Public Transit',
-      'Road Conditions',
-      'Parking Information',
-      'Bike Routes'
-    ],
-    'Housing': [
-      'Rent Assistance',
-      'Home Buying',
-      'Property Tax',
-      'Housing Programs'
-    ],
-    'Education': [
-      'School Registration',
-      'Student Loans',
-      'Scholarships',
-      'Adult Education'
-    ]
-  },
-  fr: {
-    'Services Gouvernementaux': [
-      'Demande de Passeport',
-      'Permis de Conduire',
-      'Carte Santé',
-      'Informations Fiscales'
-    ],
-    'Transport': [
-      'Transport en Commun',
-      'Conditions Routières',
-      'Information de Stationnement',
-      'Pistes Cyclables'
-    ],
-    'Logement': [
-      'Aide au Loyer',
-      'Achat de Maison',
-      'Taxe Foncière',
-      'Programmes de Logement'
-    ],
-    'Éducation': [
-      'Inscription Scolaire',
-      'Prêts Étudiants',
-      'Bourses',
-      'Éducation des Adultes'
-    ]
-  },
-  es: {
-    'Servicios Gubernamentales': [
-      'Solicitud de Pasaporte',
-      'Licencia de Conducir',
-      'Tarjeta de Salud',
-      'Información Fiscal'
-    ],
-    'Transporte': [
-      'Transporte Público',
-      'Condiciones Viales',
-      'Información de Estacionamiento',
-      'Rutas en Bicicleta'
-    ],
-    'Vivienda': [
-      'Asistencia de Renta',
-      'Compra de Vivienda',
-      'Impuesto Predial',
-      'Programas de Vivienda'
-    ],
-    'Educación': [
-      'Registro Escolar',
-      'Préstamos Estudiantiles',
-      'Becas',
-      'Educación de Adultos'
-    ]
-  }
-};
+      if (!response.ok) {
+        throw new Error('Error en la consulta');
+      }
 
-const ChatSuggestions: React.FC<ChatSuggestionsProps> = ({ onSuggestionClick }) => {
-  const { language } = useLanguage();
-  const isMobile = useBreakpointValue({ base: true, md: false });
-  const currentCategories = categories[language as keyof typeof categories];
-  
-  // Colores para modo claro/oscuro
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const textColor = useColorModeValue('gray.700', 'gray.200');
-  const categoryColor = useColorModeValue('blue.600', 'blue.300');
-  const buttonHoverBg = useColorModeValue('blue.50', 'blue.900');
-  const cardShadow = useColorModeValue('md', 'lg');
-
-  // Seleccionar imagen de fondo según el idioma
-  const getBackgroundImage = () => {
-    switch (language) {
-      case 'fr':
-        return monGov;
-      case 'en':
-        return vanGov;
-      case 'es':
-        return torGov;
-      default:
-        return torGov;
+      const data = await response.json();
+      sendMessage(suggestion.text, data.response);
+    } catch (error) {
+      console.error('Error:', error);
+      sendMessage(suggestion.text, 'Lo siento, hubo un error al procesar tu consulta.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const suggestions: Suggestion[] = [
+    { id: '1', text: '¿Cómo solicito vivienda subsidiada?' },
+    { id: '2', text: '¿Qué documentos necesito para la ciudadanía?' },
+    { id: '3', text: '¿Cómo obtengo una licencia de conducir?' },
+    { id: '4', text: '¿Cuáles son los requisitos para beneficios sociales?' },
+    { id: '5', text: '¿Cómo me registro para el seguro de salud?' }
+  ];
+
   return (
-    <Container maxW="container.xl" py={8}>
-      <Box
-        position="relative"
-        minH="100vh"
-        w="100%"
-        bg={useColorModeValue('gray.50', 'gray.900')}
-        borderRadius="xl"
-        overflow="hidden"
-      >
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          backgroundImage={`url(${getBackgroundImage()})`}
-          backgroundSize="cover"
-          backgroundPosition="center"
-          opacity={0.15}
-          zIndex={0}
-        />
-        <Box position="relative" zIndex={1} p={6}>
-          <Text
-            fontSize={isMobile ? "lg" : "xl"}
-            fontWeight="bold"
-            mb={6}
-            color={textColor}
-            textAlign="center"
-          >
-            {language === 'en' ? 'Select a Category' : language === 'fr' ? 'Sélectionnez une Catégorie' : 'Selecciona una Categoría'}
-          </Text>
-          <SimpleGrid columns={isMobile ? 1 : 2} spacing={6}>
-            {Object.entries(currentCategories).map(([categoryName, suggestions]) => (
-              <Box
-                key={categoryName}
-                p={6}
-                borderRadius="lg"
-                bg={bgColor}
-                boxShadow={cardShadow}
-                _hover={{
-                  transform: 'translateY(-2px)',
-                  boxShadow: 'lg'
-                }}
-                transition="all 0.2s"
-              >
-                <Text
-                  fontSize={isMobile ? "md" : "lg"}
-                  fontWeight="semibold"
-                  mb={4}
-                  color={categoryColor}
-                >
-                  {categoryName}
-                </Text>
-                <SimpleGrid columns={1} spacing={3}>
-                  {suggestions.map((suggestion: string) => (
-                    <Button
-                      key={suggestion}
-                      size={isMobile ? "sm" : "md"}
-                      variant="outline"
-                      colorScheme="blue"
-                      onClick={() => onSuggestionClick(suggestion)}
-                      width="100%"
-                      justifyContent="flex-start"
-                      _hover={{
-                        bg: buttonHoverBg,
-                        transform: 'translateX(4px)'
-                      }}
-                      transition="all 0.2s"
-                    >
-                      {suggestion}
-                    </Button>
-                  ))}
-                </SimpleGrid>
-              </Box>
-            ))}
-          </SimpleGrid>
-        </Box>
-      </Box>
-    </Container>
+    <div className="flex flex-wrap gap-2 p-4">
+      {suggestions.map((suggestion) => (
+        <button
+          key={suggestion.id}
+          onClick={() => handleSuggestionClick(suggestion)}
+          disabled={loading}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm transition-colors duration-200 disabled:opacity-50"
+        >
+          {suggestion.text}
+        </button>
+      ))}
+    </div>
   );
 };
 

@@ -12,7 +12,8 @@ export default defineConfig({
   },
   base: process.env.NODE_ENV === 'production' ? '/UrbCiv/' : '/',
   server: {
-    port: 3000,
+    port: 3003,
+    strictPort: false,
     host: true,
     open: true
   }

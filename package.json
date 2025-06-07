@@ -1,20 +1,14 @@
 {
-  "name": "urb-civ",
+  "name": "chatbot-gobierno",
   "version": "1.0.0",
-  "private": true,
+  "description": "Chatbot gubernamental con RAG",
   "scripts": {
-    "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm install && npm run build",
-    "start": "cd frontend && npm run preview"
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && python -m uvicorn app:app --reload --port 8000",
+    "start:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
-  },
-  "devDependencies": {
-    "@types/react": "^19.1.6",
-    "@types/react-dom": "^19.1.6"
+    "concurrently": "^8.2.2"
   }
 }

@@ -130,10 +130,10 @@ const Chat = () => {
   const handleStartChat = () => {
     const welcomeMessage: Message = {
       text: language === 'en' 
-        ? "Hello! I'm UrbCiv, your virtual assistant in government matters. Before we start, what's your name?"
+        ? "Hello! I'm MAPLE, your assistant for meaningful help in Canada. Before we start, what's your name?"
         : language === 'fr'
-          ? "Bonjour ! Je suis UrbCiv, votre assistant virtuel en matière gouvernementale. Avant de commencer, quel est votre nom ?"
-          : "¡Hola! Soy UrbCiv, tu asistente virtual en temas gubernamentales. Antes de empezar, ¿cómo te llamas?",
+          ? "Bonjour ! Je suis MAPLE, votre assistant pour l'aide significative au Canada. Avant de commencer, quel est votre nom ?"
+          : "¡Hola! Soy MAPLE, tu asistente para ayuda significativa en Canadá. Antes de empezar, ¿cómo te llamas?",
       sender: 'assistant',
       timestamp: new Date().toISOString(),
       id: Date.now().toString(),
@@ -313,7 +313,7 @@ const Chat = () => {
 
     try {
       await navigator.share({
-        title: language === 'en' ? 'Shared response from UrbCiv' : language === 'fr' ? 'Réponse partagée de UrbCiv' : 'Respuesta compartida de UrbCiv',
+        title: language === 'en' ? 'Shared response from MAPLE' : language === 'fr' ? 'Réponse partagée de MAPLE' : 'Respuesta compartida de MAPLE',
         text: message.text,
       })
     } catch (error) {
@@ -468,6 +468,8 @@ const Chat = () => {
             </HStack>
           </Flex>
 
+          <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
+
           {!isLocationEnabled && (
             <Alert status="info" borderRadius="md" variant="subtle">
               <AlertIcon />
@@ -505,125 +507,47 @@ const Chat = () => {
           )}
 
           <Box
-            bg="whiteAlpha.900"
+            flex="1"
+            overflowY="auto"
+            maxH="calc(100vh - 400px)"
+            p={4}
             borderRadius="lg"
-            boxShadow="xl"
-            p={isMobile ? 3 : 6}
-            flex={1}
-            display="flex"
-            flexDirection="column"
-            backdropFilter="blur(10px)"
+            bg={useColorModeValue('whiteAlpha.900', 'gray.800')}
+            boxShadow="sm"
+            mt={4}
           >
-            <VStack spacing={4} align="stretch" flex={1}>
-              <Box
-                flex={1}
-                overflowY="auto"
-                css={{
-                  '&::-webkit-scrollbar': {
-                    width: '4px',
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    width: '6px',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background: 'rgba(0, 0, 0, 0.2)',
-                    borderRadius: '24px',
-                  },
-                }}
-                mb={4}
-              >
-                {messages.map((message, index) => (
-                  <Box
-                    key={index}
-                    mb={4}
-                    display="flex"
-                    flexDirection="column"
-                    alignItems={message.sender === 'user' ? 'flex-end' : 'flex-start'}
-                  >
-                    <Box
-                      maxW={isMobile ? "90%" : "80%"}
-                      bg={message.sender === 'user' ? 'blue.500' : 'gray.100'}
-                      color={message.sender === 'user' ? 'white' : 'inherit'}
-                      p={isMobile ? 3 : 4}
-                      borderRadius="lg"
-                      position="relative"
-                      _hover={{
-                        transform: 'translateY(-2px)',
-                        shadow: 'md'
-                      }}
-                      transition="all 0.2s"
-                    >
-                      <Text fontSize={isMobile ? "sm" : "md"}>{message.text}</Text>
-                      {message.details && (
-                        <MessageDetails 
-                          details={{
-                            ...message.details,
-                            location: message.details.location && 
-                              'name' in message.details.location ? 
-                              message.details.location as MessageDetails['location'] : 
-                              undefined,
-                            links: message.details.links?.map(link => 
-                              typeof link === 'string' ? { title: link, url: link } : link
-                            )
-                          }} 
-                          language={language} 
-                        />
-                      )}
-                    </Box>
-                  </Box>
-                ))}
-                <div ref={messagesEndRef} />
-              </Box>
-
-              {!selectedCategory && (
-                <Box>
-                  <ChatSuggestions
-                    onSuggestionClick={handleSuggestionClick}
-                    category={selectedCategory}
-                  />
-                </Box>
-              )}
-
-              <HStack spacing={2} mt={4}>
-                <Input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder={language === 'en' ? 'Type your message...' : language === 'fr' ? 'Tapez votre message...' : 'Escribe tu mensaje...'}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage(e);
-                    }
-                  }}
-                  size={isMobile ? "sm" : "md"}
-                  flex={1}
-                  bg="white"
-                  borderColor="gray.200"
-                  _hover={{
-                    borderColor: 'blue.400'
-                  }}
-                  _focus={{
-                    borderColor: 'blue.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-blue-500)'
-                  }}
-                />
-                <Button
-                  colorScheme="blue"
-                  onClick={(e) => handleSendMessage(e)}
-                  isLoading={isLoading}
-                  loadingText={language === 'en' ? 'Sending...' : language === 'fr' ? 'Envoi...' : 'Enviando...'}
-                  size={isMobile ? "sm" : "md"}
-                  leftIcon={<FaPaperPlane />}
-                  _hover={{
-                    transform: 'translateY(-1px)',
-                    boxShadow: 'lg'
-                  }}
-                >
-                  {language === 'en' ? 'Send' : language === 'fr' ? 'Envoyer' : 'Enviar'}
-                </Button>
-              </HStack>
-            </VStack>
+            {messages.map((message) => (
+              <MessageDetails
+                key={message.id}
+                message={message}
+                onRate={handleRateResponse}
+                onShare={handleShareResponse}
+                onSave={handleSaveResponse}
+                language={language}
+              />
+            ))}
+            {isLoading && (
+              <Flex justify="center" my={4}>
+                <Spinner />
+              </Flex>
+            )}
+            <div ref={messagesEndRef} />
           </Box>
+
+          <form onSubmit={handleSendMessage} style={{ marginTop: '1rem' }}>
+            <Flex>
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={language === 'en' ? "Type your message..." : language === 'fr' ? "Tapez votre message..." : "Escribe tu mensaje..."}
+                mr={2}
+                bg={useColorModeValue('white', 'gray.700')}
+              />
+              <Button type="submit" colorScheme="blue">
+                <FaPaperPlane />
+              </Button>
+            </Flex>
+          </form>
         </VStack>
       </Box>
 

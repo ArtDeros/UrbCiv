@@ -46,4 +46,27 @@ coverage/
 *.log
 *.pid
 *.seed
-*.pid.lock 
+*.pid.lock
+
+# Node
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+ENV/
+
+# General
+.DS_Store
+*.log
+
+# Frontend
+frontend/.env
+
+# Backend
+data/
+backend/.env
+backend/data/ 

@@ -1,31 +1,24 @@
-import { ChakraProvider } from '@chakra-ui/react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { LocationProvider } from './contexts/LocationContext'
-import { ColorModeProvider } from './contexts/ColorModeContext'
-import { LanguageProvider } from './contexts/LanguageContext'
-import Navbar from './components/Navbar'
-import Home from './pages/Home'
-import Chat from './pages/Chat'
-import theme from './theme'
+import React from 'react';
+import { ChatProvider } from './context/ChatContext';
+import Chat from './components/Chat';
+import ChatSuggestions from './components/ChatSuggestions';
 
-const App = () => {
+const App: React.FC = () => {
   return (
-    <ChakraProvider theme={theme}>
-      <ColorModeProvider>
-        <LocationProvider>
-          <LanguageProvider>
-            <Router>
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/chat" element={<Chat />} />
-              </Routes>
-            </Router>
-          </LanguageProvider>
-        </LocationProvider>
-      </ColorModeProvider>
-    </ChakraProvider>
-  )
-}
+    <ChatProvider>
+      <div className="min-h-screen bg-gray-100">
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold text-center mb-8">
+            Asistente Virtual Gubernamental
+          </h1>
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <Chat />
+            <ChatSuggestions />
+          </div>
+        </div>
+      </div>
+    </ChatProvider>
+  );
+};
 
-export default App 
+export default App; 

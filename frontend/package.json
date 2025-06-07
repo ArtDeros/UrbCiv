@@ -1,5 +1,5 @@
 {
-  "name": "urbciv-frontend",
+  "name": "maple",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -54,5 +54,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "Meaningful Assistance for People Living Everywhere - Un asistente inteligente que combina APIs gubernamentales con RAG para proporcionar información precisa y contextualizada"
 }
